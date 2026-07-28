@@ -1,5 +1,3 @@
-using Contracts.Wallet;
-
 namespace Wallet.Models;
 
 public sealed class Transaction(
@@ -9,7 +7,7 @@ public sealed class Transaction(
     int categoryId,
     string categoryName,
     string categoryIcon,
-    CategoryType categoryType,
+    short categoryType,
     DateTime createdAt,
     DateTime updatedAt)
 {
@@ -26,11 +24,11 @@ public sealed class TransactionsUpdateHistory(
     int previousCategoryId,
     string previousCategoryName,
     string previousCategoryIcon,
-    CategoryType previousCategoryType,
+    short previousCategoryType,
     int currentCategoryId,
     string currentCategoryName,
     string currentCategoryIcon,
-    CategoryType currentCategoryType,
+    short currentCategoryType,
     string previousDescription,
     string currentDescription,
     decimal previousAmount,

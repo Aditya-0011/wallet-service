@@ -8,14 +8,17 @@ using Timeout = Wallet.Utils.Timeout;
 
 namespace Wallet.Services;
 
-public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSource) : FinanceService.FinanceServiceBase
+public sealed partial class Finance(ILogger<Finance> logger, NpgsqlDataSource dataSource) : FinanceService.FinanceServiceBase
 {
+    private ILogger<Finance> Logger => logger;
+    private NpgsqlDataSource DataSource => dataSource;
+
     public override async Task<GetCategoriesResponse> GetCategories(SimpleRequest request, ServerCallContext context)
     {
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             const string query = """
                                  select
@@ -51,7 +54,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error retrieving category list for {UserId}", request.UserId);
+            Logger.LogError(ex, "Unexpected error retrieving category list for {UserId}", request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));
         }
@@ -62,7 +65,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.edit_category(p_id := -1, p_userId := @p_userId, p_name := @p_name, p_icon := @p_icon, p_type := @p_type)",
@@ -88,7 +91,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error creating category for {UserId}", request.UserId);
+            Logger.LogError(ex, "Unexpected error creating category for {UserId}", request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));
         }
@@ -99,7 +102,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.edit_category(p_id := @p_id, p_userId := @p_userId, p_name := @p_name, p_icon := @p_icon, p_type := @p_type)",
@@ -129,7 +132,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error updating category {CategoryId} for user {UserId}", request.Id,
+            Logger.LogError(ex, "Unexpected error updating category {CategoryId} for user {UserId}", request.Id,
                 request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));
@@ -141,7 +144,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.delete_category(p_id := @p_id, p_userId := @p_userId)",
@@ -167,7 +170,7 @@ public sealed class Category(ILogger<Category> logger, NpgsqlDataSource dataSour
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error deleting category {CategoryId} for user {UserId}", request.Id,
+            Logger.LogError(ex, "Unexpected error deleting category {CategoryId} for user {UserId}", request.Id,
                 request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));

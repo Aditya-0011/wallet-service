@@ -11,3 +11,14 @@ Dockerfile
 *.suo
 **/.DS_Store
 **/Thumbs.db
+.agents/
+*.ps1
+skills-lock.json
+.env
+.env.*
+README.md
+.gitignore
+.gitattributes
+Sql/
+Properties/launchSettings.json
+*.log

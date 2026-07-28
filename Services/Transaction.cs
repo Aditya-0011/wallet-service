@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Npgsql;
 using Dapper;
 using Contracts.Wallet;
 using Wallet.Extensions;
@@ -8,8 +7,7 @@ using Timeout = Wallet.Utils.Timeout;
 
 namespace Wallet.Services;
 
-public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource dataSource)
-    : FinanceService.FinanceServiceBase
+public sealed partial class Finance
 {
     public override async Task<GetTransactionsResponse> GetTransactions(GetTransactionsRequest request,
         ServerCallContext context)
@@ -17,7 +15,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var limit = int.Min(int.Max(request.Limit, 25), 50);
             var page = int.Max(request.Page, 1);
@@ -94,7 +92,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            Logger.LogError(ex,
                 "Unexpected error retrieving transactions for user {UserId}",
                 request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
@@ -109,7 +107,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             const string query = """
                                  select
@@ -171,7 +169,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         }
         catch (Exception ex)
         {
-            logger.LogError(ex,
+            Logger.LogError(ex,
                 "Unexpected error retrieving transaction update history for transaction {TransactionId} user {UserId}",
                 request.TransactionId, request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
@@ -185,7 +183,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.edit_transaction(p_id := -1, p_userId := @p_userId, p_categoryId := @p_categoryId, p_description := @p_description, p_amount := @p_amount)",
@@ -210,7 +208,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error creating transaction for {UserId}", request.UserId);
+            Logger.LogError(ex, "Unexpected error creating transaction for {UserId}", request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));
         }
@@ -222,7 +220,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.edit_transaction(p_id := @p_id, p_userId := @p_userId, p_categoryId := @p_categoryId, p_description := @p_description, p_amount := @p_amount)",
@@ -249,7 +247,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error updating transaction {TransactionId} for user {UserId}", request.Id,
+            Logger.LogError(ex, "Unexpected error updating transaction {TransactionId} for user {UserId}", request.Id,
                 request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));
@@ -261,7 +259,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         try
         {
             using var ctx = Timeout.WithDeadline(Timeout.Duration, context.CancellationToken);
-            await using var connection = await dataSource.OpenConnectionAsync(ctx.Token);
+            await using var connection = await DataSource.OpenConnectionAsync(ctx.Token);
 
             var result = await connection.QuerySingleAsync<DbFuncResponse>(
                 "select outcode from wallet.delete_transaction(p_id := @p_id, p_userId := @p_userId)",
@@ -285,7 +283,7 @@ public sealed class Transaction(ILogger<Transaction> logger, NpgsqlDataSource da
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error deleting transaction {TransactionId} for user {UserId}", request.Id,
+            Logger.LogError(ex, "Unexpected error deleting transaction {TransactionId} for user {UserId}", request.Id,
                 request.UserId);
             throw new RpcException(new Status(StatusCode.Internal,
                 "An internal error occurred processing the wallet request"));

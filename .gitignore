@@ -35,11 +35,28 @@ ScaffoldingReadMe.txt
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
+# The NuGet packages folder
+.nuget/
 
-# Others
-~$*
-*~
-CodeCoverage/
+# User-specific launch settings (IDE launch profiles)
+*.launchSettings.json
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Visual Studio / VS Code / Rider IDE state
+.vs/
+.vscode/
+.idea/
+*.sln.docstates
+
+# Build / publish web deployment settings
+*.publishsettings
+*.pubxml
+*.publishproj
 
 # MSBuild Binary and Structured Log
 *.binlog
@@ -53,4 +70,52 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+# Code coverage results
+CodeCoverage/
+[Cc]overage*
+*.coverage
+*.coveragexml
+*.dotCover
+*.ncrunch*
+.*crunch*.local.xml
+
+# Diagnostic / log files
+*.log
+*.tlog
+*.svclog
+*.pidb
+
+# Temporary / backup files
+*.tmp
+*.temp
+*.bak
+*.old
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# dotenv environment variables file
+.env
+.env.*
+!.env.example
+
+# Editor swap / backup files
+*.swp
+*.swo
+*~
+
+# Office temp files
+~$*
+
+# AI agent local state (opencode)
 .agents/
+skills-lock.json
+
+# Local PowerShell helper scripts
+*.ps1

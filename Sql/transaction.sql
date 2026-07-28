@@ -63,7 +63,7 @@ create table if not exists wallet.transaction_update(
 );
 create index idx_wallet_transaction_updates_transactionId_userId on wallet.transaction_update(transactionId, userId);
 
-create or replace function edit_transaction(
+create or replace function wallet.edit_transaction(
     in p_id int,
     in p_userId int,
     in p_categoryId int,
@@ -236,7 +236,7 @@ exception
 end;
 $$ language plpgsql security definer;
 
-create or replace function delete_transaction(
+create or replace function wallet.delete_transaction(
     in p_id int,
     in p_userId int,
     out outcode smallint

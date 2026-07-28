@@ -6,19 +6,19 @@ public sealed class CategorySummary(
     int id,
     string name,
     string icon,
-    CategoryType type)
+    short type)
 {
     public int Id { get; } = id;
     public string Name { get; } = name;
     public string Icon { get; } = icon;
-    public CategoryType Type { get; } = type;
+    public CategoryType Type { get; } = (CategoryType)type;
 }
 
 public sealed class Category(
     int id,
     string name,
     string icon,
-    CategoryType type,
+    short type,
     DateTime createdAt,
     DateTime updatedAt)
 {
