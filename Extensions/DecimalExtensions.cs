@@ -30,4 +30,9 @@ public static class DecimalExtensions
             Value = value.ToString(CultureInfo.InvariantCulture)
         };
     }
+
+    public static decimal ToDecimal(this GrpcDecimal grpcDecimal)
+    {
+        return string.IsNullOrWhiteSpace(grpcDecimal.Value) ? 0m : decimal.Parse(grpcDecimal.Value, CultureInfo.InvariantCulture);
+    }
 }

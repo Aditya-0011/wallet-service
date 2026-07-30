@@ -76,7 +76,7 @@ exception
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql;
+$$ language plpgsql security definer;
 
 create or replace function wallet.delete_category(
     in p_id int,

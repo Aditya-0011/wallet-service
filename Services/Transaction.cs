@@ -52,12 +52,12 @@ public sealed partial class Finance
                                t.id,
                                t.description,
                                t.amount,
-                               t.createdAt,
-                               t.updatedAt,
                                c.id as categoryId,
                                c.name as categoryName,
                                c.icon as categoryIcon,
-                               c.type as categoryType
+                               c.type as categoryType,
+                               t.createdAt,
+                               t.updatedAt
                            from wallet.transaction t
                            inner join wallet.category c on t.categoryId = c.id
                            {whereClause}
@@ -192,12 +192,13 @@ public sealed partial class Finance
                     p_userId = request.UserId,
                     p_categoryId = request.CategoryId,
                     p_description = request.Description,
-                    p_amount = request.Amount
+                    p_amount = request.Amount.ToDecimal()
                 });
 
             return result.Outcode switch
             {
                 -1 => new SimpleResponse { Message = "Transaction created successfully!" },
+                1 => throw new RpcException(new Status(StatusCode.NotFound, "Category not found")),
                 2 => throw new RpcException(new Status(StatusCode.Internal, "Database error")),
                 _ => throw new RpcException(new Status(StatusCode.Internal, "Unexpected Server error"))
             };
@@ -230,7 +231,7 @@ public sealed partial class Finance
                     p_userId = request.UserId,
                     p_categoryId = request.CategoryId,
                     p_description = request.Description,
-                    p_amount = request.Amount
+                    p_amount = request.Amount.ToDecimal()
                 });
 
             return result.Outcode switch

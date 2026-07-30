@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Contracts" Version="*" />
+    <PackageReference Include="Contracts" Version="1.0.68" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
