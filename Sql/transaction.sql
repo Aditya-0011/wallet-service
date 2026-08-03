@@ -14,12 +14,12 @@
 /*
     create table if not exists wallet.user (
         id int primary key,
-        allIncome numeric(3, 2),
-        allExpense numeric(3, 2),
-        monthIncome numeric(3, 2),
-        monthExpense numeric(3, 2),
-        weekIncome numeric(3, 2),
-        weekExpense numeric(3, 2),
+        allIncome numeric(15, 2),
+        allExpense numeric(15, 2),
+        monthIncome numeric(15, 2),
+        monthExpense numeric(15, 2),
+        weekIncome numeric(15, 2),
+        weekExpense numeric(15, 2),
         updatedAt timestamptz default now()
     );
 */
@@ -42,7 +42,7 @@ create table if not exists wallet.transaction(
     userId int not null,
     categoryId int not null,
     description varchar(255) not null,
-    amount numeric(3,2) not null,
+    amount numeric(15,2) not null,
     createdAt timestamptz default now(),
     updatedAt timestamptz default now()
 );
@@ -57,8 +57,8 @@ create table if not exists wallet.transaction_update(
     currentCategoryId int not null,
     previousDescription varchar(255) not null,
     currentDescription varchar(255) not null,
-    previousAmount numeric(3,2) not null,
-    currentAmount numeric(3,2) not null,
+    previousAmount numeric(15,2) not null,
+    currentAmount numeric(15,2) not null,
     createdAt timestamptz default now()
 );
 create index idx_wallet_transaction_updates_transactionId_userId on wallet.transaction_update(transactionId, userId);

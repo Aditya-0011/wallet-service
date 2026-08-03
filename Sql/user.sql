@@ -13,12 +13,12 @@
 
 create table if not exists wallet.user (
     id int primary key,
-    allIncome numeric(3, 2),
-    allExpense numeric(3, 2),
-    monthIncome numeric(3, 2),
-    monthExpense numeric(3, 2),
-    weekIncome numeric(3, 2),
-    weekExpense numeric(3, 2),
+    allIncome numeric(15, 2),
+    allExpense numeric(15, 2),
+    monthIncome numeric(15, 2),
+    monthExpense numeric(15, 2),
+    weekIncome numeric(15, 2),
+    weekExpense numeric(15, 2),
     startDate timestamptz default now(),
     updatedAt timestamptz default now()
 );
