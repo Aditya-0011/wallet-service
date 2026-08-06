@@ -155,38 +155,38 @@ begin
 
         update wallet.user set
             allIncome = allIncome
-                        - case when i_old_category_type = 0 then i_old_amount else 0 end
-                        + case when i_category_type = 0 then p_amount else 0 end,
-            allExpense = allExpense
                         - case when i_old_category_type = 1 then i_old_amount else 0 end
                         + case when i_category_type = 1 then p_amount else 0 end,
+            allExpense = allExpense
+                        - case when i_old_category_type = 2 then i_old_amount else 0 end
+                        + case when i_category_type = 2 then p_amount else 0 end,
 
             monthIncome = case 
-                when i_reset_month then case when i_category_type = 0 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
-                else monthIncome 
-                    - case when i_old_category_type = 0 and i_old_createdAt >= i_current_month_start then i_old_amount else 0 end
-                    + case when i_category_type = 0 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
-            end,
-
-            monthExpense = case 
                 when i_reset_month then case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
-                else monthExpense 
+                else monthIncome 
                     - case when i_old_category_type = 1 and i_old_createdAt >= i_current_month_start then i_old_amount else 0 end
                     + case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
             end,
 
+            monthExpense = case 
+                when i_reset_month then case when i_category_type = 2 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+                else monthExpense 
+                    - case when i_old_category_type = 2 and i_old_createdAt >= i_current_month_start then i_old_amount else 0 end
+                    + case when i_category_type = 2 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+            end,
+
             weekIncome = case 
-                when i_reset_week then case when i_category_type = 0 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                when i_reset_week then case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
                 else weekIncome 
-                    - case when i_old_category_type = 0 and i_old_createdAt >= i_current_week_start then i_old_amount else 0 end
-                    + case when i_category_type = 0 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                    - case when i_old_category_type = 1 and i_old_createdAt >= i_current_week_start then i_old_amount else 0 end
+                    + case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
             end,
 
             weekExpense = case 
-                when i_reset_week then case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                when i_reset_week then case when i_category_type = 2 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
                 else weekExpense 
-                    - case when i_old_category_type = 1 and i_old_createdAt >= i_current_week_start then i_old_amount else 0 end
-                    + case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                    - case when i_old_category_type = 2 and i_old_createdAt >= i_current_week_start then i_old_amount else 0 end
+                    + case when i_category_type = 2 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
             end,
 
             updatedAt = now()
@@ -201,25 +201,25 @@ begin
         values(p_userId, p_categoryId, p_description, p_amount);
 
         update wallet.user set
-            allIncome = allIncome + case when i_category_type = 0 then p_amount else 0 end,
-            allExpense = allExpense + case when i_category_type = 1 then p_amount else 0 end,
+            allIncome = allIncome + case when i_category_type = 1 then p_amount else 0 end,
+            allExpense = allExpense + case when i_category_type = 2 then p_amount else 0 end,
 
             monthIncome = case 
-                when i_reset_month then case when i_category_type = 0 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
-                else monthIncome + case when i_category_type = 0 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+                when i_reset_month then case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+                else monthIncome + case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
             end,
             monthExpense = case 
-                when i_reset_month then case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
-                else monthExpense + case when i_category_type = 1 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+                when i_reset_month then case when i_category_type = 2 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
+                else monthExpense + case when i_category_type = 2 and i_new_createdAt >= i_current_month_start then p_amount else 0 end
             end,
 
             weekIncome = case 
-                when i_reset_week then case when i_category_type = 0 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
-                else weekIncome + case when i_category_type = 0 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                when i_reset_week then case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                else weekIncome + case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
             end,
             weekExpense = case 
-                when i_reset_week then case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
-                else weekExpense + case when i_category_type = 1 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                when i_reset_week then case when i_category_type = 2 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
+                else weekExpense + case when i_category_type = 2 and i_new_createdAt >= i_current_week_start then p_amount else 0 end
             end,
 
             updatedAt = now()
@@ -286,25 +286,25 @@ begin
     delete from wallet.transaction where id = p_id and userId = p_userId;
 
     update wallet.user set
-        allIncome = allIncome - case when i_category_type = 0 then i_amount else 0 end,
-        allExpense = allExpense - case when i_category_type = 1 then i_amount else 0 end,
+        allIncome = allIncome - case when i_category_type = 1 then i_amount else 0 end,
+        allExpense = allExpense - case when i_category_type = 2 then i_amount else 0 end,
 
         monthIncome = case
             when i_reset_month then 0
-            else monthIncome - case when i_category_type = 0 and i_createdAt >= i_current_month_start then i_amount else 0 end
+            else monthIncome - case when i_category_type = 1 and i_createdAt >= i_current_month_start then i_amount else 0 end
         end,
         monthExpense = case
             when i_reset_month then 0
-            else monthExpense - case when i_category_type = 1 and i_createdAt >= i_current_month_start then i_amount else 0 end
+            else monthExpense - case when i_category_type = 2 and i_createdAt >= i_current_month_start then i_amount else 0 end
         end,
 
         weekIncome = case
             when i_reset_week then 0
-            else weekIncome - case when i_category_type = 0 and i_createdAt >= i_current_week_start then i_amount else 0 end
+            else weekIncome - case when i_category_type = 1 and i_createdAt >= i_current_week_start then i_amount else 0 end
         end,
         weekExpense = case
             when i_reset_week then 0
-            else weekExpense - case when i_category_type = 1 and i_createdAt >= i_current_week_start then i_amount else 0 end
+            else weekExpense - case when i_category_type = 2 and i_createdAt >= i_current_week_start then i_amount else 0 end
         end,
 
         updatedAt = now()
