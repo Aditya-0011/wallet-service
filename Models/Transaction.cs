@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Wallet.Models;
 
 public sealed class Transaction(
@@ -48,4 +50,31 @@ public sealed class TransactionsUpdateHistory(
     public decimal PreviousAmount { get; } = previousAmount;
     public decimal CurrentAmount { get; } = currentAmount;
     public DateTime CreatedAt { get; } = createdAt;
+}
+
+public readonly struct TransactionUpdateHistoryRow
+{
+    [JsonPropertyName("transactionId")]
+    public int TransactionId { get; init; }
+
+    [JsonPropertyName("previousDescription")]
+    public string PreviousDescription { get; init; }
+
+    [JsonPropertyName("currentDescription")]
+    public string CurrentDescription { get; init; }
+
+    [JsonPropertyName("previousAmount")]
+    public decimal PreviousAmount { get; init; }
+
+    [JsonPropertyName("currentAmount")]
+    public decimal CurrentAmount { get; init; }
+
+    [JsonPropertyName("updateDate")]
+    public DateTimeOffset UpdateDate { get; init; }
+
+    [JsonPropertyName("previousCategoryName")]
+    public string? PreviousCategoryName { get; init; }
+
+    [JsonPropertyName("currentCategoryName")]
+    public string? CurrentCategoryName { get; init; }
 }

@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Contracts" Version="1.0.68" />
+    <PackageReference Include="Contracts" Version="1.0.74" />
     <PackageReference Include="Dapper" Version="2.1.79" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="ProtoValidate" Version="1.0.1" />
     <PackageReference Include="SpreadCheetah" Version="1.28.0" />

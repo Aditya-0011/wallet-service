@@ -22,6 +22,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine AS final
+RUN apk add --no-cache tzdata
 WORKDIR /app
 
 COPY --from=build /app/publish .
