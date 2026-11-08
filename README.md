@@ -24,7 +24,7 @@ This section explains the technologies and physical layout of the service.
 - `Services/`: gRPC service implementations
 - `Db/`: Database connection and pooling configurations
 - `Models/`: Internal data models
-- `Middlewares/`: gRPC interceptors for logging and validation
+- `Validation/`: Category request validation (plugged into `Contracts.Grpcx`, which provides server setup, interceptors and health checks)
 - `Sql/`: Schema definitions, stored procedures, and role grants
 - `Program.cs`: Application entrypoint and dependency wiring
 - `wallet.csproj`: Dependency management
@@ -62,6 +62,10 @@ Export these variables directly in your shell environment or `.env` file:
 | :--- | :--- | :---: |
 | `POSTGRES_URL` | Connection string for the PostgreSQL database | **Yes** |
 | `PORT` | The port on which the gRPC server will listen (Default: `7297`) | No |
+| `INTERNAL_BIND_IP` | Private IP to listen on (the address the gateway dials). No default | **Yes** |
+| `INTERNAL_AUTH_TOKEN` | Shared secret (32+ chars) the gateway must send as `authorization: Bearer <token>`. Same value on every service and the gateway | **Yes** |
+| `INTERNAL_TLS_CERT` / `INTERNAL_TLS_KEY` | PEM certificate and key; enables TLS on the gRPC listener when both are set | No |
+| `RPC_TIMEOUT_MS` | Upper bound per RPC (default `5000`). A shorter deadline sent by the gateway wins | No |
 
 ### Running locally
 

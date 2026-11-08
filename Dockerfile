@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.403-alpine3.24 AS build
 ARG BUILD_CONFIGURATION=Release
 ARG TARGETARCH
 
@@ -21,7 +21,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     -p:InvariantGlobalization=true \
     -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0.14-alpine3.24 AS final
 RUN apk add --no-cache tzdata
 WORKDIR /app
 

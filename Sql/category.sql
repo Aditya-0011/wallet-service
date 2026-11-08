@@ -33,7 +33,7 @@ create table if not exists wallet.category(
     updatedAt timestamptz default now(),
     unique(userId, icon, type)
 );
-create index idx_wallet_category_userId_updatedAt on wallet.category(userId, updatedAt);
+create index if not exists idx_wallet_category_userId_updatedAt on wallet.category(userId, updatedAt);
 
 create or replace function wallet.edit_category(
     in p_id int,
@@ -76,7 +76,7 @@ exception
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 create or replace function wallet.delete_category(
     in p_id int,
@@ -106,11 +106,16 @@ exception
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 revoke insert, update, delete on table wallet.category from wallet_service;
 
 grant select on table wallet.category to wallet_service;
+
+revoke execute on function
+    wallet.edit_category(int,int,varchar,varchar,int),
+    wallet.delete_category(int, int)
+from public;
 
 grant execute on function
     wallet.edit_category(int,int,varchar,varchar,int),

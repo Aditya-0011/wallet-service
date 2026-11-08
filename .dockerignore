@@ -22,3 +22,5 @@ README.md
 Sql/
 Properties/launchSettings.json
 *.log
+nuget.config
+NuGet.Config

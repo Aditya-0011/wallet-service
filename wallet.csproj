@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LocalContractsProject>$(MSBuildThisFileDirectory)../../Contracts/contracts/csharp/Contracts.csproj</LocalContractsProject>
+    <UseLocalContracts Condition="'$(UseLocalContracts)' == '' and '$(CI)' != 'true' and Exists('$(LocalContractsProject)')">true</UseLocalContracts>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,12 +13,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Contracts" Version="1.0.74" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="ProtoValidate" Version="1.0.1" />
     <PackageReference Include="SpreadCheetah" Version="1.28.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalContracts)' == 'true'">
+    <ProjectReference Include="$(LocalContractsProject)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalContracts)' != 'true'">
+    <PackageReference Include="Contracts" Version="1.0.89" />
   </ItemGroup>
 
 </Project>

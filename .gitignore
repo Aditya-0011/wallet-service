@@ -119,3 +119,7 @@ skills-lock.json
 
 # Local PowerShell helper scripts
 *.ps1
+
+# Local NuGet feed credentials (never commit)
+nuget.config
+NuGet.Config

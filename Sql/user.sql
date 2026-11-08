@@ -31,30 +31,58 @@ create or replace function wallet.initiate_user(
 as
 $$
 begin
-    perform 1 from wallet.user where id = p_id;
-    if found then 
-        v_startDate := null;
-        outcode := 0;
+    insert into wallet.user(id, allIncome, allExpense, monthIncome, monthExpense, weekIncome, weekExpense)
+    values(p_id, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
+    on conflict (id) do nothing
+    returning startDate into v_startDate;
+
+    if found then
+        outcode := -1;
         return;
     end if;
 
-    v_startDate := now();
-
-    insert into wallet.user(id, allIncome, allExpense, monthIncome, monthExpense, weekIncome, weekExpense, startDate)
-    values(p_id, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, v_startDate);
-
-    outcode := -1;
+    select startDate into v_startDate from wallet.user where id = p_id;
+    outcode := 0;
 
 exception 
     when others then 
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
+
+create or replace function wallet.get_summary(in p_id int)
+returns table (
+    allIncome numeric,
+    allExpense numeric,
+    monthIncome numeric,
+    monthExpense numeric,
+    weekIncome numeric,
+    weekExpense numeric,
+    startDate timestamptz
+)
+as $$
+    select
+        u.allIncome,
+        u.allExpense,
+        case when u.updatedAt >= date_trunc('month', now(), 'Asia/Kolkata') then u.monthIncome else 0 end,
+        case when u.updatedAt >= date_trunc('month', now(), 'Asia/Kolkata') then u.monthExpense else 0 end,
+        case when u.updatedAt >= date_trunc('week', now(), 'Asia/Kolkata') then u.weekIncome else 0 end,
+        case when u.updatedAt >= date_trunc('week', now(), 'Asia/Kolkata') then u.weekExpense else 0 end,
+        u.startDate
+    from wallet.user u
+    where u.id = p_id;
+$$ language sql stable security definer set search_path = '';
 
 revoke insert, update, delete on table wallet.user from wallet_service;
 grant select on table wallet.user to wallet_service;
 
+revoke execute on function
+    wallet.initiate_user(int),
+    wallet.get_summary(int)
+from public;
+
 grant execute on function
-    wallet.initiate_user(int)
+    wallet.initiate_user(int),
+    wallet.get_summary(int)
 to wallet_service;

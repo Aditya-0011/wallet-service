@@ -46,8 +46,8 @@ create table if not exists wallet.transaction(
     createdAt timestamptz default now(),
     updatedAt timestamptz default now()
 );
-create index idx_wallet_transaction_userId_categoryId_createdAt on wallet.transaction(userId, categoryId, createdAt desc);
-create index idx_wallet_transaction_userId_createdAt on wallet.transaction(userId, createdAt desc);
+create index if not exists idx_wallet_transaction_userId_categoryId_createdAt on wallet.transaction(userId, categoryId, createdAt desc);
+create index if not exists idx_wallet_transaction_userId_createdAt on wallet.transaction(userId, createdAt desc);
 
 create table if not exists wallet.transaction_update(
     id int generated always as identity primary key,
@@ -61,7 +61,7 @@ create table if not exists wallet.transaction_update(
     currentAmount numeric(15,2) not null,
     createdAt timestamptz default now()
 );
-create index idx_wallet_transaction_updates_transactionId_userId on wallet.transaction_update(transactionId, userId);
+create index if not exists idx_wallet_transaction_updates_transactionId_userId on wallet.transaction_update(transactionId, userId);
 
 create or replace function wallet.edit_transaction(
     in p_id int,
@@ -87,7 +87,11 @@ declare
 
     i_reset_month boolean := false;
     i_reset_week boolean := false;
-begin 
+begin
+    insert into wallet.user(id, allIncome, allExpense, monthIncome, monthExpense, weekIncome, weekExpense)
+    values(p_userId, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
+    on conflict (id) do nothing;
+
     select updatedAt into i_account_updated_at from wallet.user where id = p_userId for update;
     if not found then
         outcode := 1;
@@ -100,8 +104,8 @@ begin
         return;
     end if;
 
-    i_current_month_start := date_trunc('month', now());
-    i_current_week_start := date_trunc('week', now());
+    i_current_month_start := date_trunc('month', now(), 'Asia/Kolkata');
+    i_current_week_start := date_trunc('week', now(), 'Asia/Kolkata');
 
     if i_account_updated_at < i_current_month_start then
         i_reset_month := true;
@@ -124,7 +128,6 @@ begin
         
         i_new_createdAt := i_old_createdAt;
         
-
         update wallet.transaction set 
             categoryId = p_categoryId,
             description = p_description,
@@ -234,7 +237,7 @@ exception
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 create or replace function wallet.delete_transaction(
     in p_id int,
@@ -260,8 +263,8 @@ begin
         return;
     end if;
 
-    i_current_month_start := date_trunc('month', now());
-    i_current_week_start := date_trunc('week', now());
+    i_current_month_start := date_trunc('month', now(), 'Asia/Kolkata');
+    i_current_week_start := date_trunc('week', now(), 'Asia/Kolkata');
 
     if i_account_updated_at < i_current_month_start then
         i_reset_month := true;
@@ -316,13 +319,18 @@ exception
         raise warning 'DB Error: %', sqlerrm;
         outcode := 2;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 revoke insert, update, delete on table wallet.transaction from wallet_service;
 revoke insert, update, delete on table wallet.transaction_update from wallet_service;
 
 grant select on table wallet.transaction to wallet_service;
 grant select on table wallet.transaction_update to wallet_service;
+
+revoke execute on function
+    wallet.edit_transaction(int, int, int, varchar, numeric),
+    wallet.delete_transaction(int, int)
+from public;
 
 grant execute on function
     wallet.edit_transaction(int, int, int, varchar, numeric),
