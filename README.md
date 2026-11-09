@@ -40,7 +40,7 @@ This section outlines the capabilities of the wallet service.
 
 ## Database security
 
-- Operates strictly under its own isolated schema
+- Operates strictly under its own isolated `wallet` schema of the shared `infra` database
 - Connects using the `wallet_service` database role, which does **not** have direct `INSERT`, `UPDATE`, or `DELETE` permissions on tables
 - All complex writes and balance updates are handled safely via strictly defined database functions
 
@@ -56,7 +56,7 @@ This section explains how to run the wallet service locally.
 
 ### Configuration
 
-Export these variables directly in your shell environment or `.env` file:
+Export these variables directly in your shell environment:
 
 | Variable | Description | Required |
 | :--- | :--- | :---: |
@@ -83,4 +83,4 @@ dotnet watch run
 
 ## Deployment
 
-The service is containerized and leverages GitHub Actions (`.github/workflows/main.yml`) for automated builds and deployment to a remote VM using Podman.
+The service is containerized and leverages a manually triggered GitHub Actions workflow (`.github/workflows/main.yml`, `workflow_dispatch`) for builds and deployment to a remote VM using Podman.
