@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalContracts)' != 'true'">
-    <PackageReference Include="Contracts" Version="1.0.90" />
+    <PackageReference Include="Contracts" Version="1.0.91" />
   </ItemGroup>
 
 </Project>
